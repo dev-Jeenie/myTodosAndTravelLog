@@ -29,9 +29,7 @@ const App = () => {
   const onChangeText = (payload) => setText(payload);
   const travel = () => setWorking(true);
   const work = () => setWorking(false);
-  const [editMode, setEditMode] = React.useState(false);
   const [editText, setEditText] = React.useState("");
-  // const [isComplete, setIsComplete] = React.useState();
 
   const onSaveTodos = async (toSave) => {
     // 1. 현재의 todos를 string으로 변환
@@ -87,7 +85,6 @@ const App = () => {
 
   const onEditTodo = async (key) => {
     const newTodos = { ...todos };
-    // setEditMode((prev) => !prev);
     setEditText(newTodos[key]?.text);
     newTodos[key] = {
       text: editText,
@@ -101,9 +98,6 @@ const App = () => {
 
   const onComplete = async (key) => {
     const newTodos = { ...todos };
-    // setIsComplete(newTodos[key]?.complete);
-    // setIsComplete((prev) => !prev);
-    // setIsComplete(true);
     newTodos[key] = {
       text: newTodos[key]?.text,
       working: newTodos[key]?.working,
@@ -215,7 +209,7 @@ const App = () => {
                           paddingHorizontal: 20,
                           borderBottomColor: theme.grey,
                           borderBottomWidth: 1,
-                          color: "gray",
+                          color: "rgb(200,200,200)",
                         },
                       ]}
                     />
@@ -233,9 +227,17 @@ const App = () => {
                     </Text>
                   )}
                 </View>
-                <View style={{ flexDirection: "row" }}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <TouchableOpacity onPress={() => onEditTodo(key)}>
-                    <AntDesign name="edit" size={24} color={theme.grey} />
+                    {todos[key]?.editMode === true ? (
+                      <AntDesign
+                        name="checkcircleo"
+                        size={24}
+                        color={"rgb(200,200,200)"}
+                      />
+                    ) : (
+                      <AntDesign name="edit" size={24} color={theme.grey} />
+                    )}
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => deleteTodo(key)}
