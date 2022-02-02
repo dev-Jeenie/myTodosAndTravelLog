@@ -85,14 +85,15 @@ const App = () => {
     ]);
   };
 
-  const editTodo = async (key) => {
+  const onEditTodo = async (key) => {
     const newTodos = { ...todos };
-    setEditMode((prev) => !prev);
+    // setEditMode((prev) => !prev);
     setEditText(newTodos[key]?.text);
     newTodos[key] = {
       text: editText,
       working: newTodos[key]?.working,
       complete: newTodos[key]?.complete,
+      editMode: !newTodos[key]?.editMode,
     };
     setTodos(newTodos);
     await onSaveTodos(newTodos);
@@ -107,6 +108,7 @@ const App = () => {
       text: newTodos[key]?.text,
       working: newTodos[key]?.working,
       complete: !newTodos[key]?.complete,
+      editMode: newTodos[key]?.editMode,
     };
     console.log("========", newTodos[key]);
     setTodos(newTodos);
@@ -127,7 +129,7 @@ const App = () => {
     // 1. spread operator로 불변성 유지
     const newTodos = {
       ...todos,
-      [Date.now()]: { text, working, complete: false },
+      [Date.now()]: { text, working, complete: false, editMode: false },
       // key를 통해 todo를 찾기 위해서
     };
 
@@ -207,6 +209,15 @@ const App = () => {
                     <TextInput
                       value={editText}
                       onChangeText={(value) => setEditText(value)}
+                      style={[
+                        styles.toDoText,
+                        {
+                          paddingHorizontal: 20,
+                          borderBottomColor: theme.grey,
+                          borderBottomWidth: 1,
+                          color: "gray",
+                        },
+                      ]}
                     />
                   ) : (
                     <Text
@@ -223,7 +234,7 @@ const App = () => {
                   )}
                 </View>
                 <View style={{ flexDirection: "row" }}>
-                  <TouchableOpacity onPress={() => editTodo(key)}>
+                  <TouchableOpacity onPress={() => onEditTodo(key)}>
                     <AntDesign name="edit" size={24} color={theme.grey} />
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -241,7 +252,7 @@ const App = () => {
       </ScrollView>
     </View>
   );
-};;
+};
 
 const styles = StyleSheet.create({
   container: {
