@@ -17,6 +17,7 @@ import { theme } from "./colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator } from "react-native";
 import { Fontisto } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
 const STORAGE_KEY = "@todos";
 
@@ -28,19 +29,30 @@ const App = () => {
   const onChangeText = (payload) => setText(payload);
   const travel = () => setWorking(true);
   const work = () => setWorking(false);
+  const [editMode, setEditMode] = React.useState(false);
+  const [editText, setEditText] = React.useState("");
+  const [isComplete, setIsComplete] = React.useState();
 
   const onSaveTodos = async (toSave) => {
     // 1. 현재의 todos를 string으로 변환
     // 2. await AsyncStorage.setItem 을 해줌
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   };
+  // const saveWorking = async () => {
+  //   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(working));
+  // };
+  // const getWorking = async () => {
+  //   const isWorking = await AsyncStorage.getItem(STORAGE_KEY);
+  //   console.log("isWorking :", isWorking);
+  //   setWorking(isWorking);
+  // };
 
   const loadTodos = async () => {
     setLoading(true);
     try {
       const result = await AsyncStorage.getItem(STORAGE_KEY);
       // 휴대폰 디스크에 있던 string 받아서
-      console.log(result, JSON.parse(result));
+      // console.log(result, JSON.parse(result));
       result !== null ? setTodos(JSON.parse(result)) : null;
       // javascript object로 변환해서 state에 전달 => render => UI update
       setLoading(false);
@@ -73,8 +85,38 @@ const App = () => {
     ]);
   };
 
+  const editTodo = async (key) => {
+    // const newTodos = { ...todos };
+    // setEditMode((prev) => !prev);
+    // setEditText(newTodos[key]?.text);
+    // newTodos[key] = {
+    //   text: editText,
+    //   working: newTodos[key]?.working,
+    //   complete: newTodos[key]?.complete,
+    // };
+    // setTodos(newTodos);
+    // await onSaveTodos(newTodos);
+  };
+
+  const onComplete = async (key) => {
+    const newTodos = { ...todos };
+    // setIsComplete(newTodos[key]?.complete);
+    setIsComplete((prev) => !prev);
+    newTodos[key] = {
+      text: newTodos[key]?.text,
+      working: newTodos[key]?.working,
+      complete: isComplete,
+    };
+    console.log("========", newTodos[key]);
+    setTodos(newTodos);
+    await onSaveTodos(newTodos);
+  };
+
   React.useEffect(() => {
     loadTodos();
+    // await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(working));
+    // saveWorking();
+    // getWorking();
   }, []);
 
   const addToDo = async () => {
@@ -84,7 +126,7 @@ const App = () => {
     // 1. spread operator로 불변성 유지
     const newTodos = {
       ...todos,
-      [Date.now()]: { text, working },
+      [Date.now()]: { text, working, complete: false },
       // key를 통해 todo를 찾기 위해서
     };
 
@@ -141,10 +183,55 @@ const App = () => {
           Object.keys(todos).map((key) =>
             todos[key]?.working === working ? (
               <View key={key} style={styles.toDo}>
-                <Text style={styles.toDoText}>{todos[key]?.text}</Text>
-                <TouchableOpacity onPress={() => deleteTodo(key)}>
-                  <Fontisto name="trash" size={18} color={theme.grey} />
-                </TouchableOpacity>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <TouchableOpacity
+                    onPress={() => onComplete(key)}
+                    style={{ marginRight: 10 }}
+                  >
+                    {todos[key]?.complete === true ? (
+                      <Fontisto
+                        name="checkbox-active"
+                        size={18}
+                        color="black"
+                      />
+                    ) : (
+                      <Fontisto
+                        name="checkbox-passive"
+                        size={18}
+                        color="black"
+                      />
+                    )}
+                  </TouchableOpacity>
+                  {todos[key]?.editMode === true ? (
+                    <TextInput
+                      value={editText}
+                      onChangeText={(value) => setEditText(value)}
+                    />
+                  ) : (
+                    <Text
+                      style={[
+                        styles.toDoText,
+                        todos[key]?.complete && {
+                          color: theme.grey,
+                          textDecorationLine: "line-through",
+                        },
+                      ]}
+                    >
+                      {todos[key]?.text}
+                    </Text>
+                  )}
+                </View>
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity onPress={() => editTodo(key)}>
+                    <AntDesign name="edit" size={24} color={theme.grey} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => deleteTodo(key)}
+                    style={{ marginLeft: 10 }}
+                  >
+                    <Fontisto name="trash" size={18} color={theme.grey} />
+                  </TouchableOpacity>
+                </View>
               </View>
             ) : null
           )
