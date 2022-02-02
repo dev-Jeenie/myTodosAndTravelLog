@@ -31,7 +31,7 @@ const App = () => {
   const work = () => setWorking(false);
   const [editMode, setEditMode] = React.useState(false);
   const [editText, setEditText] = React.useState("");
-  const [isComplete, setIsComplete] = React.useState();
+  // const [isComplete, setIsComplete] = React.useState();
 
   const onSaveTodos = async (toSave) => {
     // 1. 현재의 todos를 string으로 변환
@@ -86,26 +86,27 @@ const App = () => {
   };
 
   const editTodo = async (key) => {
-    // const newTodos = { ...todos };
-    // setEditMode((prev) => !prev);
-    // setEditText(newTodos[key]?.text);
-    // newTodos[key] = {
-    //   text: editText,
-    //   working: newTodos[key]?.working,
-    //   complete: newTodos[key]?.complete,
-    // };
-    // setTodos(newTodos);
-    // await onSaveTodos(newTodos);
+    const newTodos = { ...todos };
+    setEditMode((prev) => !prev);
+    setEditText(newTodos[key]?.text);
+    newTodos[key] = {
+      text: editText,
+      working: newTodos[key]?.working,
+      complete: newTodos[key]?.complete,
+    };
+    setTodos(newTodos);
+    await onSaveTodos(newTodos);
   };
 
   const onComplete = async (key) => {
     const newTodos = { ...todos };
     // setIsComplete(newTodos[key]?.complete);
-    setIsComplete((prev) => !prev);
+    // setIsComplete((prev) => !prev);
+    // setIsComplete(true);
     newTodos[key] = {
       text: newTodos[key]?.text,
       working: newTodos[key]?.working,
-      complete: isComplete,
+      complete: !newTodos[key]?.complete,
     };
     console.log("========", newTodos[key]);
     setTodos(newTodos);
@@ -240,7 +241,7 @@ const App = () => {
       </ScrollView>
     </View>
   );
-};
+};;
 
 const styles = StyleSheet.create({
   container: {
