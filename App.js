@@ -36,14 +36,16 @@ const App = () => {
     // 2. await AsyncStorage.setItem 을 해줌
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   };
+
   // const saveWorking = async () => {
-  //   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(working));
+  //   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ working }));
   // };
-  // const getWorking = async () => {
-  //   const isWorking = await AsyncStorage.getItem(STORAGE_KEY);
-  //   console.log("isWorking :", isWorking);
-  //   setWorking(isWorking);
-  // };
+  const getWorking = async () => {
+    const { working } = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
+    console.log("isWorking :", working);
+    setWorking(working);
+  };
+  console.log(" now working :", working);
 
   const loadTodos = async () => {
     setLoading(true);
@@ -109,11 +111,18 @@ const App = () => {
     await onSaveTodos(newTodos);
   };
 
+  // React.useEffect(async () => {
+  //   await AsyncStorage.setItem(
+  //     STORAGE_KEY,
+  //     JSON.stringify({ working: working })
+  //   );
+  // }, [working]);
+
   React.useEffect(() => {
     loadTodos();
+    // getWorking();
     // await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(working));
     // saveWorking();
-    // getWorking();
   }, []);
 
   const addToDo = async () => {
